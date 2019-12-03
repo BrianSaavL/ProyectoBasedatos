@@ -1,1 +1,18 @@
 "Am6FA24F"
+
+
+    data["id"] = request.args.get('id', False)
+    data["content"] = request.args.get('content', False)
+    data["metadata"] = {"receiver":"Anheuser-Busch Inbev SA 2","sender":"Franke 2","time":"2019-04-17 05:20:37"}
+
+
+
+        # Creo el mensaje resultado
+    if (result):
+        message = "1 usuario creado"
+        success = True
+    else:
+        message = "No se pudo crear el usuario"
+        success = False
+    # Retorno el texto plano de un json
+    return json.jsonify({'success': success, 'message': message})
