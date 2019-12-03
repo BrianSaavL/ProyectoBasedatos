@@ -43,6 +43,7 @@ def delete_email():
 def get_project():
     nombre = request.args.get('nombre', False)
     info = [u for u in db.mensajes.find({"$or": [{'metadata.sender': nombre}, {'metadata.receiver':nombre}]}, {'_id': 0})]
+    print("info: ", info)
     return json.jsonify(info)
 
 @app.route("/messages", methods=['POST'])
@@ -63,29 +64,38 @@ def create_email():
 @app.route("/messages/content-search")
 def get_content():
     body = request.get_json()
-    json_data = body
-
+    json_data = body    
     if len(json_data["desired"]) > 0:
         desired = " ".join(json_data["desired"])
     else:
         desired = ""
 
     if len(json_data["required"]) > 0:
+
         required = "\"" +  "\" \"".join(json_data["required"]) + "\""
     else:
+
         required = ""
 
     if len(json_data["forbidden"]) > 0:
+
         forbidden = "-" + " -".join(json_data["forbidden"])
     else:
+        
         forbidden = ""
     
-    db.mensajes.create_index([("content", pm.TEXT)])
     search_string = "{} {} {}".format(desired, required, forbidden)
-    if len(search_string) > 0:
+    if len(search_string) > 2:
+        db.mensajes.create_index([("content", pm.TEXT)])
+
         message = list(db.mensajes.find({"$text": {"$search": "{} {} {}".format(desired, required, forbidden)}}, {"_id": 0}))
     else:
-        message = list(db.mensajes.find({},{"_id": 0}))
+        message = 0
+        x = db.mensajes.find()
+        message = []
+        for i in x:
+            del i['_id']
+            message.append(i)
     return json.jsonify(message)
 
 if __name__ == "__main__":
